@@ -1,42 +1,40 @@
 from random import *
 import matplotlib.pyplot as plt
 
-def bucket_sort(input_list):
-    max_value = max(input_list)  # Находим максимальное значение в списке
-    size = max_value / len(
-        input_list)  # Затем используем длину списка, чтобы определить, какое значение в списке попадет в какой блок
-    buckets_list = []  # Создаем n пустых блоков, где n равно длине входного списка
-    for _ in range(len(input_list)):
-        buckets_list.append([])
+def block_sort(arr, block_size):
+    blocks = [] #создаем пустой список для хранения отсортированных блоков
+    for i in range(0, len(arr), block_size): #Разбиваем список на блоки с заданным размером
+        block = arr[i:i + block_size]
+        blocks.append(sorted(block)) #сортируем каждый блок и добавляем его в список отсортированных блоков
+        #blocks.append(sorted(block, reverse=True)) #для реверсивной программы
 
-    for i in range(len(input_list)):  # Помещаем элементы списка в разные блоки на основе size
-        j = int(input_list[i] / size)
-        if j != len(input_list):
-            buckets_list[j].append(input_list[i])
-        else:
-            buckets_list[len(input_list) - 1].append(input_list[i])
+    result = [] #создаем пустой список для отсортированных блоков
 
-    for z in range(len(input_list)):  # Сортируем элементы внутри блоков с помощью сортировки вставкой
-        insertion_sort(buckets_list[z])
+    # цикл для сортировки по убыванию
+    # while blocks:
+    #     max_idx = 0
+    #     for i in range(1, len(blocks)):  # находим наибольший элемент в каждом блоке
+    #         if blocks[i][0] > blocks[max_idx][0]:
+    #             max_idx = i
+    #     result.append(blocks[max_idx].pop(0))  # удаляем из блока самый большой элемент и добавляем его в результат
+    #     if len(blocks[max_idx]) == 0:  # если блок пустой, мы удаляем его из списка отсортированных блоков
+    #         blocks.pop(max_idx)
 
-    final_output = []  # Объединяем блоки с отсортированными элементами в один список
-    for x in range(len(input_list)):
-        final_output = final_output + buckets_list[x]
-    return final_output
+    while blocks: #объединяем отсортированные блоки в список результат
+        min_idx = 0
+        for i in range(1, len(blocks)): #Находим наименьший элемент в каждом блоке
+            if blocks[i][0] < blocks[min_idx][0]:
+                min_idx = i
+        result.append(blocks[min_idx].pop(0)) #Удаляем из блока самый маленький элемент и добавляем его в результат
+        if len(blocks[min_idx]) == 0: #если блок пустой мы удаляем его из списка отсортированных блоков
+            blocks.pop(min_idx)
+
+    return result #выводим результат(отсортированный список в порядке возрастания)
 
 
-def insertion_sort(bucket):  # Испольуем сортировку вставкой для каждого блока
-    for i in range(1, len(bucket)):
-        var = bucket[i]
-        j = i - 1
-        while (j >= 0 and var < bucket[j]):  # будет работать до тех пор, пока j не отрицательное и var меньше чем элемент под индексом j
-            bucket[j + 1] = bucket[j]
-            j = j - 1
-        bucket[j + 1] = var
-
-def sorted_data_plot(sorted_data, filename='sorted_data_plot.png'):
+def sorted_data_plot(s_arr, filename='sorted_data_plot.png'):
     plt.figure(figsize=(10, 5))
-    plt.plot(sorted_data, marker='o', linestyle='-', color='b')
+    plt.plot(s_arr, marker='o', linestyle='-', color='b')
     plt.title('График отсортированных данных')
     plt.xlabel('Индекс')
     plt.ylabel('Значение')
@@ -46,26 +44,28 @@ def sorted_data_plot(sorted_data, filename='sorted_data_plot.png'):
     print(f'График сохранен как {filename}')
 
 
-
 while True:
     print("Выбери что выполнить:\n 1. Ввод данных с клавиатуры\n 2. Случайное заполнение списка")
     c = input()
     if c.isdigit() and c in ['1', '2']:  # проверка на число и на совпадение с "1" и "2"
         if c == '1':
-            a_list = [float(i) for i in input("Введите список чисел:\n").split()]  # создаем список
-            print('Список до сортировки:\n', a_list)
-            s_list = bucket_sort(a_list)  # используем функцию блочной сортировки
-            print('Список после сортировки:\n', s_list)
+            arr = [float(i) for i in input("Введите список чисел:\n").split()]  # создаем список
+            block_size = int(input('Какой размерности будут блоки: ')) #задаем размер блоков
+            print('Список до сортировки:\n', arr)
+            s_arr = block_sort(arr,block_size)  # используем функцию блочной сортировки
+            print('Список после сортировки:\n', s_arr)
+            sorted_data_plot(s_arr)
             exit()
         elif c == '2':
             n = randint(3, 20)  # рандомная длина списка
-            a_list = [uniform(-100, 100) for i in range(n)]  # создаем список с рандомными значениями
-            a_list = [round(a_list[i], 2) for i in
-                      range(len(a_list))]  # округляем числа с плавающей точкой до двух знаков после запятой
-            print('Список до сортировки:\n', a_list)
-            s_list = bucket_sort(a_list)  # используем функцию блочной сортировки
-            print('Список после сортировки:\n', s_list)
-            sorted_data_plot(s_list)
+            block_size = randint(1,n) #задаем размер блоков
+            arr = [uniform(-100, 100) for i in range(n)]  # создаем список с рандомными значениями
+            arr = [round(arr[i], 2) for i in range(len(arr))]  # округляем числа с плавающей точкой до двух знаков после запятой
+            print('Размер блоков:', block_size)
+            print('Список до сортировки:\n', arr)
+            s_arr = block_sort(arr,block_size)  # используем функцию блочной сортировки
+            print('Список после сортировки:\n', s_arr)
+            sorted_data_plot(s_arr)
             exit()
         else:
             continue  # если ввести некорректные данные, программа запускается еще раз
