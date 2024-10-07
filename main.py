@@ -1,5 +1,6 @@
 from random import *
 import matplotlib.pyplot as plt
+import timeit
 
 def block_sort(arr, block_size):
     blocks = [] #создаем пустой список для хранения отсортированных блоков
@@ -44,6 +45,18 @@ def sorted_data_plot(s_arr, filename='sorted_data_plot.png'):
     print(f'График сохранен как {filename}')
 
 
+#подсчет времени затраченного на выполнение программы
+# n = 1000  # размер списка
+# block_size = 10  # размер блока
+# arr = [uniform(-100, 100) for _ in range(n)]  # создаем список с рандомными значениями
+# arr = [round(arr[i], 2) for i in range(len(arr))]  # округляем числа с плавающей точкой до двух знаков после запятой
+#
+# # Используем timeit для измерения времени выполнения
+# execution_time = timeit.timeit(lambda: block_sort(arr, block_size), number=1) #number количество запусков
+#
+# print(f'Время выполнения блочной сортировки для {n} элементов: {execution_time:.5f} секунд')
+
+#основная программа
 while True:
     print("Выбери что выполнить:\n 1. Ввод данных с клавиатуры\n 2. Случайное заполнение списка")
     c = input()
