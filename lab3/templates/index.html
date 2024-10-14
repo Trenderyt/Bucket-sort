@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сортировка</title>
+</head>
+<body>
+    <h1>Выберите, что выполнять:</h1>
+    <form action="/process" method="POST">
+        <div>
+            <label>
+                <input type="radio" name="input_type" value="manual" checked> Ввод данных с клавиатуры
+            </label>
+            <br>
+            <textarea name="user_input" placeholder="Введите список чисел, разделённых пробелом"></textarea>
+            <input type="number" name="block_size" placeholder="Размер блоков" required>
+        </div>
+        <div>
+            <label>
+                <input type="radio" name="input_type" value="random"> Случайное заполнение списка
+            </label>
+        </div>
+        <button type="submit">Выполнить</button>
+    </form>
+    <br>
+    <a href="/history">Посмотреть историю массивов</a>
+</body>
+</html>
