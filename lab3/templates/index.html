@@ -4,6 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Сортировка</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f8f9fa;
+        }
+        h1 {
+            color: #343a40;
+        }
+        input, textarea, button {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            padding: 8px;
+            width: 300px;
+            font-size: 16px;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+        }
+        .test-section {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid #ced4da;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
     <script>
         function toggleBlockSizeInput() {
             const manualOption = document.getElementById('manual');
@@ -13,13 +51,11 @@
             if (manualOption.checked) {
                 blockSizeInput.style.display = 'block';
                 userInputContainer.style.display = 'block';
-                // Добавляем атрибут required
                 document.querySelector('textarea[name="user_input"]').setAttribute('required', 'required');
                 document.querySelector('input[name="block_size"]').setAttribute('required', 'required');
             } else {
                 blockSizeInput.style.display = 'none';
                 userInputContainer.style.display = 'none';
-                // Убираем атрибут required
                 document.querySelector('textarea[name="user_input"]').removeAttribute('required');
                 document.querySelector('input[name="block_size"]').removeAttribute('required');
             }
@@ -27,46 +63,80 @@
 
         function checkForm() {
             const inputType = document.querySelector('input[name="input_type"]:checked').value;
+            let isValid = true;
 
             if (inputType === 'manual') {
                 const userInput = document.querySelector('textarea[name="user_input"]').value;
                 const blockSize = document.querySelector('input[name="block_size"]').value;
 
-                // Проверка, если необходимо
                 if (!userInput || !blockSize) {
                     alert("Пожалуйста, заполните все поля для ручного ввода.");
-                    return false; // Не отправляем форму
+                    isValid = false;
                 }
             }
-            // Для случайного ввода просто возвращаем true
-            return true; // Вернуть true, чтобы отправить форму
+
+            return isValid; // Вернуть true, чтобы отправить форму
+        }
+
+        function runTest(url) {
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('test-result');
+                    resultDiv.innerHTML = `<p>${data.success ? 'Тест выполнен успешно!' : 'Ошибка при выполнении теста.'}</p>
+                                           <p>Время выполнения: ${data.time ? data.time.toFixed(4) + ' секунд' : ''}</p>`;
+                })
+                .catch(error => {
+                    const resultDiv = document.getElementById('test-result');
+                    resultDiv.innerHTML = `<p>Ошибка: ${error}</p>`;
+                });
         }
     </script>
 </head>
 <body onload="toggleBlockSizeInput()">
-<h1>Выберите, что выполнять:</h1>
-<form action="/process" method="POST" onsubmit="return checkForm();">
-    <div>
-        <label>
-            <input type="radio" id="manual" name="input_type" value="manual" checked onclick="toggleBlockSizeInput()">
-            Ввод данных с клавиатуры
-        </label>
-        <br>
-        <div id="user_input_container">
-            <textarea name="user_input" placeholder="Введите список чисел, разделённых пробелом" required></textarea>
-            <div id="block_size_container">
-                <input type="number" name="block_size" placeholder="Размер блоков" required>
+    <h1>Выберите, что выполнять:</h1>
+    <div id="error-message" class="error" style="display:none;"></div>
+    <form action="/process" method="POST" onsubmit="return checkForm();">
+        <div>
+            <label>
+                <input type="radio" id="manual" name="input_type" value="manual" checked onclick="toggleBlockSizeInput()">
+                Ввод данных с клавиатуры
+            </label>
+            <br>
+            <div id="user_input_container">
+                <textarea name="user_input" placeholder="Введите список чисел, разделённых пробелом"></textarea>
+                <div id="block_size_container">
+                    <input type="number" name="block_size" placeholder="Размер блоков">
+                </div>
             </div>
         </div>
+        <div>
+            <label>
+                <input type="radio" id="random" name="input_type" value="random" onclick="toggleBlockSizeInput()"> Случайное заполнение списка
+            </label>
+        </div>
+        <button type="submit">Выполнить</button>
+    </form>
+
+    <div class="test-section">
+        <h2>Тестирование</h2>
+        <p>Запустите тесты для добавления массивов, сортировки и очистки базы данных.</p>
+        <button onclick="runTest('/test_add_100')">Тест: Добавить 100 массивов</button>
+        <button onclick="runTest('/test_add_1000')">Тест: Добавить 1000 массивов</button>
+        <button onclick="runTest('/test_add_10000')">Тест: Добавить 10000 массивов</button>
+        <br>
+        <button onclick="runTest('/test_sort_100')">Тест: Сортировка 100 массивов</button>
+        <button onclick="runTest('/test_sort_1000')">Тест: Сортировка 1000 массивов</button>
+        <button onclick="runTest('/test_sort_10000')">Тест: Сортировка 10000 массивов</button>
+        <br>
+        <button onclick="runTest('/test_clear_100')">Тест: Очистка базы данных (100)</button>
+        <button onclick="runTest('/test_clear_1000')">Тест: Очистка базы данных (1000)</button>
+        <button onclick="runTest('/test_clear_10000')">Тест: Очистка базы данных (10000)</button>
     </div>
-    <div>
-        <label>
-            <input type="radio" id="random" name="input_type" value="random" onclick="toggleBlockSizeInput()"> Случайное заполнение списка
-        </label>
-    </div>
-    <button type="submit">Выполнить</button>
-</form>
-<br>
-<a href="/history">Посмотреть историю массивов</a>
+    <div id="test-result"></div>
+    <br>
+    <a href="/history">Посмотреть историю массивов</a>
+    <br>
+    <a href="/help">Справка</a>
 </body>
 </html>

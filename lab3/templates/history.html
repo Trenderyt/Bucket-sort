@@ -4,13 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>История массивов</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
     <h1>Сохраненные массивы</h1>
     <form action="/clear_history" method="POST" onsubmit="return confirm('Вы уверены, что хотите очистить историю?');">
         <button type="submit">Очистить историю</button>
     </form>
-    <table border="1">
+    <table>
         <thead>
             <tr>
                 <th>ID</th>
@@ -31,5 +49,7 @@
         </tbody>
     </table>
     <a href="/">Назад</a>
+    <br>
+    <a href="/help">Справка</a>
 </body>
 </html>
