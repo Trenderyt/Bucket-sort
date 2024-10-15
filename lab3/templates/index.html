@@ -4,21 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Сортировка</title>
+    <script>
+        function toggleBlockSizeInput() {
+            const manualOption = document.getElementById('manual');
+            const blockSizeInput = document.getElementById('block_size_container');
+            const userInputContainer = document.getElementById('user_input_container');
+
+            if (manualOption.checked) {
+                blockSizeInput.style.display = 'block';
+                userInputContainer.style.display = 'block';
+            } else {
+                blockSizeInput.style.display = 'none';
+                userInputContainer.style.display = 'none';
+            }
+        }
+
+        function checkForm() {
+            const inputType = document.querySelector('input[name="input_type"]:checked').value;
+            if (inputType === 'manual') {
+                const userInput = document.querySelector('textarea[name="user_input"]').value;
+                const blockSize = document.querySelector('input[name="block_size"]').value;
+
+                // Просто для проверки данных в консоли
+                console.log("User Input: ", userInput);
+                console.log("Block Size: ", blockSize);
+            } else {
+                console.log("Random input selected.");
+            }
+            return true;  // Вернуть true, чтобы отправить форму
+        }
+    </script>
 </head>
-<body>
+<body onload="toggleBlockSizeInput()">
     <h1>Выберите, что выполнять:</h1>
-    <form action="/process" method="POST">
+    <form action="/process" method="POST" onsubmit="return checkForm();">
         <div>
             <label>
-                <input type="radio" name="input_type" value="manual" checked> Ввод данных с клавиатуры
+                <input type="radio" id="manual" name="input_type" value="manual" checked onclick="toggleBlockSizeInput()"> Ввод данных с клавиатуры
             </label>
             <br>
-            <textarea name="user_input" placeholder="Введите список чисел, разделённых пробелом"></textarea>
-            <input type="number" name="block_size" placeholder="Размер блоков" required>
+            <div id="user_input_container">
+                <textarea name="user_input" placeholder="Введите список чисел, разделённых пробелом" required></textarea>
+                <div id="block_size_container">
+                    <input type="number" name="block_size" placeholder="Размер блоков" required>
+                </div>
+            </div>
         </div>
         <div>
             <label>
-                <input type="radio" name="input_type" value="random"> Случайное заполнение списка
+                <input type="radio" name="input_type" value="random" onclick="toggleBlockSizeInput()"> Случайное заполнение списка
             </label>
         </div>
         <button type="submit">Выполнить</button>
