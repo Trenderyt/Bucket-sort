@@ -1,9 +1,7 @@
 import sqlite3
-from random import *
-
+from random import randint, uniform
 from flask import Flask, request, render_template, redirect
-
-from __init__ import *
+from __init__ import block_sort  # Импортируем функцию сортировки
 
 # Настройка приложения Flask
 app = Flask(__name__)
@@ -45,30 +43,45 @@ def index():
 @app.route('/process', methods=['POST'])
 def process():
     input_type = request.form.get('input_type')
-    print("Input Type: ", input_type)  # Проверка типа ввода
-    arr = []
-    block_size = 0
-    sorted_array = []
 
     if input_type == 'manual':
+        return process_manual()
+    elif input_type == 'random':
+        return process_random()
+    else:
+        return render_template('error.html', message="Invalid input type.")
+
+def process_manual():
+    try:
         arr = [float(i) for i in request.form.get('user_input').split()]
         block_size = int(request.form.get('block_size'))
-    elif input_type == 'random':
-        n = randint(3, 20)
-        block_size = randint(1, n)
-        arr = [uniform(-100, 100) for _ in range(n)]
-        arr = [round(num, 2) for num in arr]
-
-    print("Generated Array: ", arr)  # Проверка сгенерированного массива
+    except ValueError:
+        return render_template('error.html', message="Invalid input for manual array.")
 
     sorted_array = block_sort(arr, block_size)
 
-    print("Sorted Array: ", sorted_array)  # Проверка отсортированного массива
+    print("Manual Input Array:", arr)
+    print("Block Size:", block_size)
+    print("Sorted Array:", sorted_array)
 
     save_array(arr, sorted_array, block_size)
 
     return render_template('result.html', original=arr, sorted=sorted_array, block_size=block_size)
 
+def process_random():
+    n = randint(3, 20)  # Генерируем случайное количество элементов
+    block_size = randint(1, n)  # Генерируем случайный размер блока
+    arr = [round(uniform(-100, 100), 2) for _ in range(n)]  # Генерируем случайные числа
+
+    sorted_array = block_sort(arr, block_size)
+
+    print("Generated Random Array:", arr)
+    print("Block Size:", block_size)
+    print("Sorted Array:", sorted_array)
+
+    save_array(arr, sorted_array, block_size)
+
+    return render_template('result.html', original=arr, sorted=sorted_array, block_size=block_size)
 
 @app.route('/history')
 def history():
@@ -77,7 +90,6 @@ def history():
     cursor.execute('SELECT * FROM arrays')
     rows = cursor.fetchall()
     conn.close()
-
     return render_template('history.html', rows=rows)
 
 
@@ -86,6 +98,8 @@ def clear_history():
     conn = sqlite3.connect('arrays.db')
     cursor = conn.cursor()
     cursor.execute('DELETE FROM arrays')
+    # Сбросить счётчик ID
+    cursor.execute('DELETE FROM sqlite_sequence WHERE name="arrays"')
     conn.commit()
     conn.close()
     return redirect('/history')

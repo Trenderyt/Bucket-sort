@@ -1,6 +1,4 @@
 from random import *
-import matplotlib.pyplot as plt
-import timeit
 from __init__ import * # <-- Подключаю собственную библиотеку
 
 
